@@ -2,10 +2,10 @@ import zipfile, os, datetime, time, json, re
 import pandas as pd
 
 
-zip_path = r"C:\Users\BigMan\Documents\Paradox Interactive\Europa Universalis IV\save games\autosave.eu4"
-extract_dir = r"C:\Users\BigMan\Documents\Paradox Interactive\Europa Universalis IV\save games\Code\Extract"
-gamestate_path = r"C:\Users\BigMan\Documents\Paradox Interactive\Europa Universalis IV\save games\Code\Extract\gamestate"
-meta_path = r"C:\Users\BigMan\Documents\Paradox Interactive\Europa Universalis IV\save games\Code\Extract\meta"
+zip_path = r""
+extract_dir = r""
+gamestate_path = r""
+meta_path = r""
 
 with open(r"C:\Users\BigMan\AppData\Local\Programs\Python\Python36-32\tag_dict.txt", 'r') as file:
 	all_country_tag = json.loads(file.read())
