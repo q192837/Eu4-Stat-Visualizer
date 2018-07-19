@@ -7,7 +7,7 @@ import plotly.graph_objs as go
 
 
 
-save_dir = r"C:\Users\BigMan\Documents\Paradox Interactive\Europa Universalis IV\save games\Code\Save Data"
+save_dir = r""
 dfs = []
 years = []
 data_options = ["treasury", "score", "estimated_monthly_income",
