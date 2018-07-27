@@ -7,7 +7,7 @@ extract_dir = r""
 gamestate_path = r""
 meta_path = r""
 
-with open(r"C:\Users\BigMan\AppData\Local\Programs\Python\Python36-32\tag_dict.txt", 'r') as file:
+with open(r"", 'r') as file:
 	all_country_tag = json.loads(file.read())
 
 #Countries tags to search for
@@ -79,7 +79,7 @@ while(True):
         end = meta.find('\n', begin)
         dis_name = meta[begin:end]
         dis_name = dis_name[:-1]
-        export_name = r"C:\Users\BigMan\Documents\Paradox Interactive\Europa Universalis IV\save games\Code\Save Data\\" + dis_name + '_' + game_date + ".csv"
+        export_name = r"" + dis_name + '_' + game_date + ".csv"
 
         for tag in country_tag:
             # checks to see if country tag exists in current game
