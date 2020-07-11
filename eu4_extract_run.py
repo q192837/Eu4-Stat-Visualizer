@@ -11,8 +11,18 @@ with open(r"", 'r') as file:
 	all_country_tag = json.loads(file.read())
 
 #Countries tags to search for
-country_tag = ["FRA", "GBR", "TUR" , "MAM", "SPA", "MNG", "DLH", "MOS", "MOR", "PLC", "HAB", "CAS", "POR", "DAN", "SWE", "ARA", "TUN", "BAH", "POL", "RUS", "BRA", "PRU", "GER", "ENG", "BOH", "BUR", "NED", "NAP", "PAP" "VEN", "GEN", "JAP", "JNP", "VIJ",
-               "BEN", "ORI", "MAL", "AYU", "KRC", "MJZ", "KOR", "AZT", "ZAN", "SCO", "HAM", "GEL", "ETH", "SDY", "UES"]
+#country_tag = ["FRA", "GBR", "TUR" , "MAM", "SPA", "MNG", "DLH", "MOS", "MOR", "PLC", "HAB", "CAS", "POR", "DAN", "SWE", "ARA", "TUN", "BAH", "POL", "RUS", "BRA", "PRU", "GER", "ENG", "BOH", "BUR", "NED", "NAP", "PAP" "VEN", "GEN", "JAP", "JNP", "VIJ",
+               #"BEN", "ORI", "MAL", "AYU", "KRC", "MJZ", "KOR", "AZT", "ZAN", "SCO", "HAM", "GEL", "ETH", "SDY", "UES", "ROM"]
+country_tag = ['FRA', 'GBR', 'TUR', 'MAM', 'SPA', 'MNG', 'DLH', 'MOS', 'MOR', 'PLC', 'HAB', 'CAS',
+               'POR', 'DAN', 'SWE', 'ARA', 'TUN', 'BAH', 'POL', 'RUS', 'BRA', 'PRU', 'GER', 'ENG',
+               'BOH', 'BUR', 'NED', 'NAP', 'PAP', 'VEN', 'GEN', 'JAP', 'JNP', 'VIJ', 'BEN', 'ORI',
+               'MAL', 'AYU', 'KRC', 'MJZ', 'KOR', 'AZT', 'ZAN', 'SCO', 'HAM', 'GEL', 'ETH', 'SDY',
+               'UES', 'ROM', 'BAV', 'SIL', 'HUN', 'LIT', 'BOS', 'SER', 'SAV', 'SWI', 'HES', 'SAX',
+               'TEU', 'POM', 'MKL', 'BRU', 'TRI', 'LIE', 'MUN', 'ALS', 'PAL', 'WBG', 'OLD', 'LAU',
+               'HSA', 'NUM', 'RVA', 'ULM', 'MEM', 'AUG', 'LOR', 'PRO', 'AAC', 'ANH', 'ANS', 'BAD',
+               'BRE', 'EFR', 'FRN', 'HAN', 'HLR', 'KLE', 'KOL', 'LUN', 'MAG', 'MAI', 'MEI', 'MVA',
+               'SLZ', 'STY', 'THU', 'TIR', 'WES', 'WUR', 'VER', 'NSA', 'DTT', 'TIM', 'PER', 'MUG'
+               'SCA', 'NOG', 'KAZ', 'OIR', 'CHG', 'SHY', 'GLH', 'GOL', 'MGE', 'ORM', 'BYZ', 'QAR']
 #variables in standard format to collect
 data_collect = ["human", "government_rank", "national_focus", "technology_cost", "capital", "trade_port", "base_tax", "raw_development", "religion",
                 "adm_tech", "dip_tech", "mil_tech", "is_at_war", "current_power_projection", "great_power_score" , "navy_strength", "total_war_worth", "num_of_rebel_controlled_provinces",
