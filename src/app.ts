@@ -59,3 +59,10 @@ async function readGamestate(file: string) {
     });
   });
 }
+
+class Campaign {
+  name: string
+  startDate: string;
+  playerCountry: string
+  arr : { [key:string]:string; } = {"POL": "POLAND"};
+}
