@@ -1,7 +1,5 @@
-import { dialog } from 'electron';
+import { remote } from 'electron';
 import { OpenDialogOptions } from 'electron';
-
-
 
 // Also note that document does not exist in a normal node environment
 // button click event
@@ -10,7 +8,7 @@ document.getElementById("mybutton").addEventListener("click", loadZip, false);
 async function loadZip(){
     const options : OpenDialogOptions = "openFile" as OpenDialogOptions;
 
-    dialog.showOpenDialog(null, options).then(async (filename) => {
+    remote.dialog.showOpenDialog(null, options).then(async (filename) => {
 
         const selectedFile = filename.filePaths[0];
 
