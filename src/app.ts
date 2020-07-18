@@ -38,23 +38,27 @@ class Campaign {
     await this.readMeta('./meta')
     await this.readGamestate("./gamestate");
   }
+
   async readMeta(file: string) {
     return new Promise(resolve => {
-    const fs = require('fs');
-    const stream = fs.createReadStream(file, {encoding: 'utf8'});
-    stream.on('data', (meta: any) => {
-        this.setGameData("ALL", "date", this.getDate(meta));
+      const fs = require('fs');
+      const stream = fs.createReadStream(file, {encoding: 'utf8'});
 
+      stream.on('data', (meta: any) => {
+        this.setGameData("ALL", "date", this.getDate(meta));
         stream.destroy();
-        });
-    stream.on('close', () => {
+      });
+
+      stream.on('close', () => {
         resolve();
       });
     });
   }
+
  getDate(data: string) {
     return data.match(/date=(\d*.\d*.\d*)/)[1];
 }
+
   async readGamestate(file: string) {
     return new Promise(resolve => {
     const fs = require('fs');
@@ -64,7 +68,7 @@ class Campaign {
       const tagStart = starti;
       let endi;
       Campaign.AllTags.forEach((name: string, tag: string) => {
-        let prevStarti = starti;
+        const prevStarti = starti;
         starti = gamestate.indexOf(this.getTagSearch(tag), starti)
         if(starti === -1){
           starti = prevStarti;
