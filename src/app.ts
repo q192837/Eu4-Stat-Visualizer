@@ -1,6 +1,7 @@
 import { remote } from 'electron';
 import { OpenDialogOptions } from 'electron';
 
+
 // Also note that document does not exist in a normal node environment
 // button click event
 document.getElementById("mybutton").addEventListener("click", loadZip, false);
@@ -17,9 +18,7 @@ async function loadZip(){
         const AdmZip = require('adm-zip');
         const zip = new AdmZip(selectedFile);
         zip.extractAllTo("./", true);
-        const test = new Campaign();
-        test.readMeta("./meta");
-        test.readGamestate("./gamestate");
+        test.processImport();
         console.log(test.gameData)
         console.timeEnd(selectedFile);
   });
@@ -29,17 +28,23 @@ class Campaign {
   name: string
   startDate: string;
   playerCountry: string
-  gameData: Map<string, Map<string, string>>
+  gameData: Map<string, Map<string, string[]>>
   constructor(){
-    this.gameData = new Map<string, Map<string, string>>();
+    this.gameData = new Map<string, Map<string, string[]>>();
     this.playerCountry = "TUR";
+  }
+
+  async processImport(){
+    await this.readMeta('./meta')
+    await this.readGamestate("./gamestate");
   }
   async readMeta(file: string) {
     return new Promise(resolve => {
     const fs = require('fs');
     const stream = fs.createReadStream(file, {encoding: 'utf8'});
     stream.on('data', (meta: any) => {
-        this.startDate = this.getStartDate(meta)
+        this.setGameData("ALL", "date", this.getDate(meta));
+
         stream.destroy();
         });
     stream.on('close', () => {
@@ -47,7 +52,7 @@ class Campaign {
       });
     });
   }
- getStartDate(data: string) {
+ getDate(data: string) {
     return data.match(/date=(\d*.\d*.\d*)/)[1];
 }
   async readGamestate(file: string) {
@@ -57,28 +62,24 @@ class Campaign {
       let starti = gamestate.indexOf("countries")+"countries".length;
       starti = gamestate.indexOf("countries", starti+"countries".length);
       const tagStart = starti;
-      //console.log(tagStart);
       let endi;
       Campaign.AllTags.forEach((name: string, tag: string) => {
         let prevStarti = starti;
         starti = gamestate.indexOf(this.getTagSearch(tag), starti)
-        this.gameData.set(tag, new Map());
         if(starti === -1){
           starti = prevStarti;
-          //console.log(`NO ${ tag }`)
           return;
         }
-        //console.log(this.getTagSearch(tag));
-        //console.log(starti);
         Campaign.DataPoints.forEach((dataPoint: string) => {
           starti = gamestate.indexOf(dataPoint+'=', starti)
           if (starti === -1){
             starti = prevStarti;
+            this.setGameData(tag, dataPoint, "NONE");
             return;
           }
           endi = gamestate.indexOf('\n', starti);
           const dataValue = gamestate.substring(starti+dataPoint.length+1, endi);
-          this.gameData.get(tag).set(dataPoint, dataValue);
+          this.setGameData(tag, dataPoint, dataValue);
           })
         })
         });
@@ -90,6 +91,19 @@ class Campaign {
     const searchString = tag === this.playerCountry ? 'human' : 'has_set_government_name';
     return `${ tag }={\n\t\t${ searchString }`;
   }
+
+  setGameData(tag: string, dataPoint: string, dataValue: string){
+    if (!this.gameData.has(tag)){
+      this.gameData.set(tag, new Map());
+    }
+    if (this.gameData.get(tag).has(dataPoint)){
+      this.gameData.get(tag).get(dataPoint).push(dataValue)
+    }
+    else{
+      this.gameData.get(tag).set(dataPoint, [dataValue]);
+    }
+  }
+
 
   static DataPoints : string[] = ['human', 'national_focus', 'technology_cost', 'is_at_war', 'num_of_mercenaries', 'num_of_regulars', 'num_of_colonies', 'num_of_heathen_provs',
   'republican_tradition', 'root_out_corruption_sliderlegitimacy', 'absolutism', 'government_rank', 'religion', 'capital', 'trade_port', 'base_tax', 'raw_development', 'adm_tech',
@@ -182,4 +196,4 @@ class Campaign {
   ["JMN", "Jan Mayen"],["ROM", "RomanEmpire"], ["SYN", "Synthetics"]])
 }
 
-}
+const test = new Campaign();
