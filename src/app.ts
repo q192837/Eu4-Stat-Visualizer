@@ -63,6 +63,7 @@ class Campaign {
     return new Promise(resolve => {
     const fs = require('fs');
     fs.readFile(file, 'utf8', (error: any, gamestate: string) => {
+    const gamestate = fs.readFileSync(file, 'utf8');
       let starti = gamestate.indexOf("countries")+"countries".length;
       starti = gamestate.indexOf("countries", starti+"countries".length);
       const tagStart = starti;
@@ -70,15 +71,19 @@ class Campaign {
       Campaign.AllTags.forEach((name: string, tag: string) => {
         const prevStarti = starti;
         starti = gamestate.indexOf(this.getTagSearch(tag), starti)
-        if(starti === -1){
+        if(starti === -1) {
           starti = prevStarti;
           return;
         }
         Campaign.DataPoints.forEach((dataPoint: string) => {
           starti = gamestate.indexOf(dataPoint+'=', starti)
-          if (starti === -1){
+          if (starti === -1) {
             starti = prevStarti;
             this.setGameData(tag, dataPoint, "NONE");
+            return;
+          }
+          if(Campaign.additionalParseDataPoints.has(dataPoint)){
+            this.parseComplicatedDataPoint(tag, dataPoint, starti);
             return;
           }
           endi = gamestate.indexOf('\n', starti);
@@ -96,27 +101,37 @@ class Campaign {
     return `${ tag }={\n\t\t${ searchString }`;
   }
 
-  setGameData(tag: string, dataPoint: string, dataValue: string){
-    if (!this.gameData.has(tag)){
+  setGameData(tag: string, dataPoint: string, dataValue: string) {
+    if (!this.gameData.has(tag)) {
       this.gameData.set(tag, new Map());
     }
-    if (this.gameData.get(tag).has(dataPoint)){
+    if (this.gameData.get(tag).has(dataPoint)) {
       this.gameData.get(tag).get(dataPoint).push(dataValue)
     }
-    else{
+    else {
       this.gameData.get(tag).set(dataPoint, [dataValue]);
     }
   }
 
+  parseComplicatedDataPoint(tag: string, dataPoint: string, starti: number) {
+    return '';
+  }
+
 
   static DataPoints : string[] = ['human', 'national_focus', 'technology_cost', 'is_at_war', 'num_of_mercenaries', 'num_of_regulars', 'num_of_colonies', 'num_of_heathen_provs',
+
+  static DataPoints : string[] = ['human', 'history', 'national_focus', 'technology_cost', 'is_at_war', 'num_of_mercenaries', 'num_of_regulars', 'num_of_colonies', 'num_of_heathen_provs',
   'republican_tradition', 'root_out_corruption_sliderlegitimacy', 'absolutism', 'government_rank', 'religion', 'capital', 'trade_port', 'base_tax', 'raw_development', 'adm_tech',
   'dip_tech', 'mil_tech', 'current_power_projection', 'great_power_score', 'score', 'navy_strength', 'total_war_worth', 'num_of_rebel_controlled_provinces', 'num_of_rebel_armies',
   'num_owned_home_cores', 'non_overseas_developmen', 'num_of_controlled_cities', 'num_of_total_ports', 'num_of_cities', 'forts', 'num_of_allies', 'num_of_royal_marriages',
   'num_of_subjects', 'average_unrest', 'average_autonomy', 'prestige', 'stability', 'treasury', 'estimated_monthly_income', 'land_maintenance', 'naval_maintenance',
-  'colonial_maintenance', 'missionary_maintenance', 'army_tradition', 'navy_tradition', 'lastmonthincome', 'lastmonthexpense', 'loan_size', 'estimated_loan', 'religious_unity',
-  'meritocracy', 'corruption', 'mercantilism', 'splendor', 'army_professionalism', 'manpower', 'max_manpower', 'max_sailors', 'wants_to_be_great_power', 'needs_regiments',
+  'colonial_maintenance', 'missionary_maintenance', 'army_tradition', 'navy_tradition', 'lastmonthincome', 'lastmonthincometable', 'lastmonthexpense', 'lastmonthexpensetable', 'loan_size',
+  'estimated_loan', 'religious_unity', 'meritocracy', 'corruption', 'mercantilism', 'splendor', 'active_idea_groups', 'army_professionalism', 'manpower', 'max_manpower', 'max_sailors', 'wants_to_be_great_power', 'needs_regiments',
   'needs_buildings', 'needs_ships']
+
+  static additionalParseDataPoints : Set<string> = new Set(['history', 'lastmonthincometable', 'lastmonthexpensetable', 'active_idea_groups'])
+
+  static test : Map<string, string> = new Map([["REB", "Rebels"]]);
 
   static AllTags : Map<string, string> = new Map([["REB", "Rebels"], ["PIR", "Pirates"], ["NAT", "Natives"], ["SWE", "Sweden"], ["DAN", "Denmark"], ["FIN", "Finland"], ["GOT", "Gotland"], ["NOR", "Norway"], ["SHL", "Holstein"], ["SCA", "Scandinavia"],
   ["EST", "Estonia"], ["LVA", "Livonia"], ["SMI", "Sami"], ["KRL", "Karelia"], ["ICE", "Iceland"], ["ACH", "PrincipalityOfAchaia"], ["ALB", "Albania"], ["ATH", "Athens"], ["BOS", "Bosnia"], ["BUL", "Bulgaria"],
