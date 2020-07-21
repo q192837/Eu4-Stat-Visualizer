@@ -1,5 +1,7 @@
 import { remote } from 'electron';
 import { OpenDialogOptions } from 'electron';
+import * as fs from "fs";
+import { Stats } from 'fs';
 
 
 // Also note that document does not exist in a normal node environment
@@ -114,12 +116,9 @@ class Campaign {
           this.setGameData(tag, dataPoint, dataValue);
           })
         })
-        });
-        resolve();
-    });
   }
 
-  getTagSearch(tag: string){
+  getTagSearch(tag: string) {
     const searchString = tag === this.playerCountry ? 'human' : 'has_set_government_name';
     return `${ tag }={\n\t\t${ searchString }`;
   }
