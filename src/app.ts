@@ -139,8 +139,37 @@ class Campaign {
     return '';
   }
 
+  saveJson(filename = `${ this.playerCountry }_${ this.gameData.get("ALL").get("date")[this.gameData.get("ALL").get("date").length - 1]}`){
+    const fs = require('fs');
 
-  static DataPoints : string[] = ['human', 'national_focus', 'technology_cost', 'is_at_war', 'num_of_mercenaries', 'num_of_regulars', 'num_of_colonies', 'num_of_heathen_provs',
+    fs.writeFile(`./saves/${ filename }.json`, this.stringifyGameData(), {flag: "w"}, (err: Error) => {
+      if(err) {
+        return console.log(err);
+      }
+    });
+  }
+
+  stringifyGameData(){
+    let saveData = "";
+    let tagBegin = '{'
+    this.gameData.forEach((data, tag) => {
+      saveData += tagBegin + `"${ tag }": `
+      tagBegin = "}, ";
+      let dataPointBegin = "{"
+      data.forEach((dataValues, dataPoint) => {
+        saveData += dataPointBegin + `"${ dataPoint }": ["${ dataValues.join('", "') }"]`;
+        dataPointBegin = ", ";
+      })
+    })
+    return saveData + "}}";
+  }
+
+  async loadJson(filename="") {
+    var fs = require('fs');
+    this.gameData = JSON.parse(fs.readFileSync("./saves/TUR_1445.1.1.json", 'utf8'));
+    console.log(this.gameData);
+  }
+
 
   static DataPoints : string[] = ['human', 'history', 'national_focus', 'technology_cost', 'is_at_war', 'num_of_mercenaries', 'num_of_regulars', 'num_of_colonies', 'num_of_heathen_provs',
   'republican_tradition', 'root_out_corruption_sliderlegitimacy', 'absolutism', 'government_rank', 'religion', 'capital', 'trade_port', 'base_tax', 'raw_development', 'adm_tech',
