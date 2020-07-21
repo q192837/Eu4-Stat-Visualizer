@@ -4,24 +4,59 @@ import { OpenDialogOptions } from 'electron';
 
 // Also note that document does not exist in a normal node environment
 // button click event
-document.getElementById("mybutton").addEventListener("click", loadZip, false);
+document.getElementById("mybutton").addEventListener("click", watchZip);
 
-async function loadZip(){
-    const options : OpenDialogOptions = "openFile" as OpenDialogOptions;
+document.getElementById("saveButton").addEventListener("click", saveGame);
 
-    remote.dialog.showOpenDialog(null, options).then(async (filename) => {
+let autosaveLastModified : Date;
 
-        const selectedFile = filename.filePaths[0];
+let autosavePath : string;
 
-        console.time(selectedFile);
 
-        const AdmZip = require('adm-zip');
-        const zip = new AdmZip(selectedFile);
-        zip.extractAllTo("./", true);
-        test.processImport();
-        console.log(test.gameData)
-        console.timeEnd(selectedFile);
+function watchZip(){
+  const options : OpenDialogOptions = "openDirectory" as OpenDialogOptions;
+  console.log(options);
+
+  const filePaths = remote.dialog.showOpenDialogSync(null, options);
+  const autosave = filePaths.find(name => name.includes("autosave") && name[0] !== 'o');
+  fs.stat(autosave, (err: Error, stats: Stats) =>{
+    autosaveLastModified = stats.mtime;
   });
+  fs.watch(autosave, { encoding: 'buffer' }, watchFile);
+  autosavePath = autosave;
+}
+
+function LoadZip(filename: string){
+  const AdmZip = require('adm-zip');
+  console.log(filename);
+  console.log(filename.toString());
+  const zip = new AdmZip(filename.toString());
+  zip.extractAllTo("./", true);
+  test.processImport();
+  console.timeEnd(filename);
+
+}
+
+function watchFile(eventType: string, filename: string) {
+  if (eventType) {
+    console.log(eventType);
+  }
+  if (!filename) {
+    return;
+  }
+  if (eventType === "change"){
+    const stats = fs.statSync(autosavePath);
+    if (stats.mtime.getTime() > autosaveLastModified.getTime()){
+      console.log(autosaveLastModified);
+      console.log(stats.mtime);
+      autosaveLastModified = stats.mtime;
+      LoadZip(autosavePath);
+    }
+  }
+}
+
+function saveGame(){
+  test.loadJson();
 }
 
 class Campaign {
@@ -34,35 +69,23 @@ class Campaign {
     this.playerCountry = "TUR";
   }
 
-  async processImport(){
-    await this.readMeta('./meta')
-    await this.readGamestate("./gamestate");
+  processImport(){
+    this.readMeta('./meta');
+    this.readGamestate("./gamestate");
+    test.saveJson();
   }
 
-  async readMeta(file: string) {
-    return new Promise(resolve => {
+  readMeta(file: string) {
       const fs = require('fs');
-      const stream = fs.createReadStream(file, {encoding: 'utf8'});
-
-      stream.on('data', (meta: any) => {
-        this.setGameData("ALL", "date", this.getDate(meta));
-        stream.destroy();
-      });
-
-      stream.on('close', () => {
-        resolve();
-      });
-    });
+      const meta = fs.readFileSync(file, 'utf8');
+      this.setGameData("ALL", "date", this.getDate(meta));
   }
 
  getDate(data: string) {
     return data.match(/date=(\d*.\d*.\d*)/)[1];
 }
 
-  async readGamestate(file: string) {
-    return new Promise(resolve => {
-    const fs = require('fs');
-    fs.readFile(file, 'utf8', (error: any, gamestate: string) => {
+  readGamestate(file: string) {
     const gamestate = fs.readFileSync(file, 'utf8');
       let starti = gamestate.indexOf("countries")+"countries".length;
       starti = gamestate.indexOf("countries", starti+"countries".length);
