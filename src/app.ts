@@ -66,15 +66,20 @@ class Campaign {
   startDate: string;
   playerCountry: string
   gameData: Map<string, Map<string, string[]>>
+  saveCount: number;
   constructor(){
     this.gameData = new Map<string, Map<string, string[]>>();
     this.playerCountry = "TUR";
+    this.saveCount = 0;
   }
 
   processImport(){
     this.readMeta('./meta');
     this.readGamestate("./gamestate");
-    test.saveJson();
+    if (++this.saveCount % 4 === 0){
+      test.saveJson();
+      console.log("SAVED");
+    }
   }
 
   readMeta(file: string) {
