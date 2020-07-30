@@ -30,12 +30,8 @@ function watchZip(){
 
 function LoadZip(filename: string){
   const AdmZip = require('adm-zip');
-  console.log(filename);
-  console.log(filename.toString());
   const zip = new AdmZip(filename.toString());
   zip.extractAllTo("./", true);
-  test.processImport();
-  console.timeEnd(filename);
 
 }
 
@@ -49,8 +45,6 @@ function watchFile(eventType: string, filename: string) {
   if (eventType === "change"){
     const stats = fs.statSync(autosavePath);
     if (stats.mtime.getTime() > autosaveLastModified.getTime()){
-      console.log(autosaveLastModified);
-      console.log(stats.mtime);
       autosaveLastModified = stats.mtime;
       LoadZip(autosavePath);
     }
@@ -83,7 +77,6 @@ class Campaign {
   }
 
   readMeta(file: string) {
-      const fs = require('fs');
       const meta = fs.readFileSync(file, 'utf8');
       this.setGameData("ALL", "date", this.getDate(meta));
   }
@@ -94,33 +87,36 @@ class Campaign {
 
   readGamestate(file: string) {
     const gamestate = fs.readFileSync(file, 'utf8');
-      let starti = gamestate.indexOf("countries")+"countries".length;
-      starti = gamestate.indexOf("countries", starti+"countries".length);
-      const tagStart = starti;
-      let endi;
-      Campaign.AllTags.forEach((name: string, tag: string) => {
-        const prevStarti = starti;
-        starti = gamestate.indexOf(this.getTagSearch(tag), starti)
-        if(starti === -1) {
-          starti = prevStarti;
+    let starti = gamestate.indexOf("countries") + "countries".length;
+    starti = gamestate.indexOf("countries", starti + "countries".length);
+    const allCountriesStarti = starti;
+    Campaign.AllTags.forEach((name: string, tag: string) => {
+      const prevStarti = starti
+      starti = gamestate.indexOf(this.getTagSearch(tag), starti)
+      if(starti === -1) {
+        starti = gamestate.indexOf(this.getTagSearch(tag), allCountriesStarti)
+        if (starti === -1){
+          starti = prevStarti
           return;
         }
-        Campaign.DataPoints.forEach((dataPoint: string) => {
-          starti = gamestate.indexOf(dataPoint+'=', starti)
-          if (starti === -1) {
-            starti = prevStarti;
-            this.setGameData(tag, dataPoint, "NONE");
-            return;
-          }
-          if(Campaign.additionalParseDataPoints.has(dataPoint)){
-            this.parseComplicatedDataPoint(tag, dataPoint, starti);
-            return;
-          }
-          endi = gamestate.indexOf('\n', starti);
-          const dataValue = gamestate.substring(starti+dataPoint.length+1, endi);
-          this.setGameData(tag, dataPoint, dataValue);
-          })
-        })
+      }
+      const tagStarti = starti
+      Campaign.DataPoints.forEach((dataPoint: string) => {
+        starti = gamestate.indexOf(dataPoint + '=', starti)
+        if (starti === -1) {
+          starti = tagStarti;
+          this.setGameData(tag, dataPoint, "NONE");
+          return;
+        }
+        if(Campaign.additionalParseDataPoints.has(dataPoint)) {
+          this.parseComplicatedDataPoint(tag, dataPoint, starti);
+          return;
+        }
+        const endi = gamestate.indexOf('\n', starti);
+        const dataValue = gamestate.substring(starti+dataPoint.length + 1, endi);
+        this.setGameData(tag, dataPoint, dataValue);
+      });
+    });
   }
 
   getTagSearch(tag: string) {
@@ -145,8 +141,6 @@ class Campaign {
   }
 
   saveJson(filename = `${ this.playerCountry }_${ this.gameData.get("ALL").get("date")[this.gameData.get("ALL").get("date").length - 1]}`){
-    const fs = require('fs');
-
     fs.writeFile(`./saves/${ filename }.json`, this.stringifyGameData(), {flag: "w"}, (err: Error) => {
       if(err) {
         return console.log(err);
@@ -170,7 +164,6 @@ class Campaign {
   }
 
   async loadJson(filename="") {
-    var fs = require('fs');
     this.gameData = JSON.parse(fs.readFileSync("./saves/TUR_1445.1.1.json", 'utf8'));
     console.log(this.gameData);
   }
