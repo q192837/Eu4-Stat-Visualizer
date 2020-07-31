@@ -106,10 +106,12 @@ class Campaign {
         }
       }
       const tagStarti = starti
+      const tagEndi = gamestate.indexOf("mission_slot={", starti);
+      const nation = gamestate.substring(tagStarti, tagEndi);
       Campaign.DataPoints.forEach((dataPoint: string) => {
-        starti = gamestate.indexOf(dataPoint + '=', starti)
+        starti = nation.indexOf(dataPoint + '=', starti)
         if (starti === -1) {
-          starti = tagStarti;
+          starti = 0;
           this.setGameData(tag, dataPoint, "NONE");
           return;
         }
@@ -117,8 +119,8 @@ class Campaign {
           this.parseComplicatedDataPoint(tag, dataPoint, starti);
           return;
         }
-        const endi = gamestate.indexOf('\n', starti);
-        const dataValue = gamestate.substring(starti+dataPoint.length + 1, endi);
+        const endi = nation.indexOf('\n', starti);
+        const dataValue = nation.substring(starti+dataPoint.length + 1, endi);
         this.setGameData(tag, dataPoint, dataValue);
       });
     });
