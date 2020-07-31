@@ -2,6 +2,7 @@ import { remote } from 'electron';
 import { OpenDialogOptions } from 'electron';
 import * as fs from "fs";
 import { Stats } from 'fs';
+import {v4 as uuid} from 'uuid';
 
 
 // Also note that document does not exist in a normal node environment
@@ -31,8 +32,9 @@ function watchZip(){
 function LoadZip(filename: string){
   const AdmZip = require('adm-zip');
   const zip = new AdmZip(filename.toString());
-  zip.extractAllTo("./", true);
-
+  const tempFolder: string = `./saves/temp/${ uuid() }`;
+  zip.extractAllTo(tempFolder, true);
+  test.processImport(tempFolder);
 }
 
 function watchFile(eventType: string, filename: string) {
@@ -67,12 +69,15 @@ class Campaign {
     this.saveCount = 0;
   }
 
-  processImport(){
-    this.readMeta('./meta');
-    this.readGamestate("./gamestate");
+  processImport(tempFolder: string){
+    this.readMeta(`${ tempFolder }/meta`);
+    this.readGamestate(`${ tempFolder }/gamestate`);
+    this.cleanUpFiles(tempFolder);
+    console.log(this.gameData.get("TUR"))
     if (++this.saveCount % 4 === 0){
       test.saveJson();
       console.log("SAVED");
+      console.log(this.gameData);
     }
   }
 
@@ -166,6 +171,13 @@ class Campaign {
   async loadJson(filename="") {
     this.gameData = JSON.parse(fs.readFileSync("./saves/TUR_1445.1.1.json", 'utf8'));
     console.log(this.gameData);
+  }
+
+  cleanUpFiles(folder: string){
+    fs.readdirSync(folder).forEach((file: string) => {
+      fs.unlinkSync(`${folder}/${ file }`);
+    });
+    fs.rmdirSync(folder);
   }
 
 
