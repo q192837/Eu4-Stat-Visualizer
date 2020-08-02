@@ -112,7 +112,7 @@ class LineGraph {
         }
 
         GetDecimalFromMonthAndDay(month, day){
-            return (30 * parseInt(month) + parseInt(day)) / 365
+            return Math.round((30 * (parseInt(month) - 1) + parseInt(day)) / 365 * 10) / 10
         }
 
         GetPrettyData(){
