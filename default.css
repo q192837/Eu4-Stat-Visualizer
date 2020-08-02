@@ -1,0 +1,77 @@
+body{
+    background-color: #001628;
+    color: white;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+
+}
+
+div {
+    border: 1px solid;
+    display: inline-block;
+}
+
+#plotBox {
+    width: 70%;
+}
+
+#optionsBox {
+    width: 29%;
+}
+
+.tagOption {
+    width: 100%;
+}
+
+#chart{
+    background-color: #001628;
+}
+
+.input_container{
+    margin: 25px 25px 25px 0px;
+    padding: 10px 10px 10px 0px;
+    width: 25%;
+    font-size: large;
+}
+
+input[type=text]{
+    border: 1px solid white;
+    border-radius: 4px;
+    height: 25px;
+    padding-left: 4px;
+}
+
+input[type=submit]{
+    color: #fff !important;
+    text-transform: uppercase;
+    text-decoration: none;
+    background: #ed3330;
+    padding: 20px;
+    border-radius: 5px;
+    display: inline-block;
+    border: none;
+    transition: all 0.4s ease 0s;
+}
+
+input[type=submit]:hover{
+    background: #434343;
+    letter-spacing: 1px;
+    -webkit-box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
+    -moz-box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
+    box-shadow: 5px 40px -10px rgba(0,0,0,0.57);
+    transition: all 0.4s ease 0s;
+}
+
+.line {
+    fill: none;
+    stroke-width: 3px;
+  }
+.axis text{
+    fill: white;
+}
+.axis path{
+    fill: white;
+}
+.axisLabel {
+    stroke: white;
+    text-anchor: "middle";
+}
