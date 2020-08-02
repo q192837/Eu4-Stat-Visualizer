@@ -34,12 +34,6 @@ class LineGraph {
             .attr("transform",
                 "translate(" + margin.left + "," + margin.top + ")");
 
-        /*
-        data.sort(function(a, b){
-            return a["time"]-b["time"];
-        });
-        */
-
         this.x.domain([d3.min(data, d => {
             return Math.min(d.date); }),
             d3.max(data, d => {
@@ -87,7 +81,6 @@ class LineGraph {
             .attr("class", "axisLabel")
             .attr("id", "yAxis")
             .text(this.yLabel);
-
         }
 
         PathGenerator(tag){
@@ -126,8 +119,6 @@ class LineGraph {
             });
             return prettyData;
         }
-
-
     }
 
 
