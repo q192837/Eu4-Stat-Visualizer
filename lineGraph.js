@@ -27,7 +27,7 @@ class LineGraph {
         this.x = d3.scaleLinear().range([0, width]);
         this.y = d3.scaleLinear().range([height, 0]);
 
-        let svg = d3.select("body").append("svg")
+        let svg = d3.select("#chart")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
