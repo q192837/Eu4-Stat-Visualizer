@@ -11,9 +11,9 @@ class LineGraph {
         this.xLabel = options.xLabel || "Year"
         this.yLabel = options.xLabel || this.variable;
 
-        this.countries = ["TUR", "FRA", "ENG", "MNG"];
+        this.tags = options.tags || [];
 
-        this.colors = ["#bf0404", "#e6df22", "#25e8e2", "#3af016"];
+        this.colors = options.colors || []; //["#bf0404", "#e6df22", "#25e8e2", "#3af016"];
         this.render();
     }
 
@@ -46,11 +46,11 @@ class LineGraph {
                 return Math.max(d.date); })]);
 
          this.y.domain([d3.min(data, d => {
-                return Math.min(...Array.from(this.countries, tag => {return parseFloat(d[tag])+(parseFloat(d[tag])*.10)}))}),
+                return Math.min(...Array.from(this.tags, tag => {return parseFloat(d[tag])+(parseFloat(d[tag])*.10)}))}),
                 d3.max(data, d => {
-                return Math.max(...Array.from(this.countries, tag => {return parseFloat(d[tag])+(parseFloat(d[tag])*.10)}))})]);
+                return Math.max(...Array.from(this.tags, tag => {return parseFloat(d[tag])+(parseFloat(d[tag])*.10)}))})]);
 
-        this.countries.forEach((tag, i) => {
+        this.tags.forEach((tag, i) => {
             svg.append("path")
                 .data([data])
                 .attr("class", "line")
@@ -119,7 +119,7 @@ class LineGraph {
             var prettyData = [];
             this.data.ALL.date.forEach((date, i) => {
                 var timePointObject = {"date": this.GetYearFromDateString(date)};
-                this.countries.forEach((tag) => {
+                this.tags.forEach((tag) => {
                     timePointObject[tag] = this.data[tag][this.variable][i];
                 });
                 prettyData.push(timePointObject);
@@ -134,11 +134,18 @@ class LineGraph {
 
 
 const fs = require('fs');
+const uiBuild = require("./dist/plotUIBuild.js")
 
 let saveFile = fs.readFileSync('./saves/TUR_1450.1.1.json');
 var data = JSON.parse(saveFile);
+
+uiBuild.populateVariableSelect();
+uiBuild.populateGraphCheckBoxes();
+
 let chart = new LineGraph('#chart', {
     data: data,
     width: 960,
-    height: 700
+    height: 700,
+    tags: uiBuild.getActiveTags(),
+    colors: uiBuild.getActiveTagColors(),
     });
