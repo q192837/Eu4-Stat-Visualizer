@@ -9,12 +9,14 @@
     "start": "npm run build && electron ./dist/main.js"
   },
   "devDependencies": {
+    "@types/uuid": "^8.0.0",
     "electron": "^9.1.0",
     "tslint": "^6.1.2",
     "typescript": "^3.9.5"
   },
   "dependencies": {
     "@types/electron": "^1.6.10",
-    "adm-zip": "^0.4.16"
+    "adm-zip": "^0.4.16",
+    "uuid": "^8.3.0"
   }
 }
