@@ -2,15 +2,17 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Hello World!</title>
+    <title>Menu</title>
     <!-- https://electronjs.org/docs/tutorial/security#csp-meta-tag -->
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
   </head>
   <body>
-    <input type="button" id="mybutton">
-    <input type="button" id="saveButton">
+    <input type="button" id="mybutton" value="Watch File">
+    <input type="button" id="saveButton" value="Save Game">
+    <input type="button" id="loadButton" value="Load Save">
     <br>
     <a href="./plot.html">HERE THE PLOT</a>
+
 
     <script>
       require("./dist/app.js")
