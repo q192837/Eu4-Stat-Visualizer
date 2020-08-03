@@ -13,14 +13,24 @@ const ActiveCountries : Map<string, Map<string, string>> = new Map([
     ["FRA", new Map([["displayName", "France"], ["color", "20 50 210"]])],
     ["ENG", new Map([["displayName", "England"], ["color", "193 26 14"]])],
     ["MNG", new Map([["displayName", "Ming"], ["color", "179 128 104"]])],
+    ["MAM", new Map([["displayName", "Mamlucks"], ["color", "188 166 93"]])],
+    ["HAB", new Map([["displayName", "Austria"], ["color", "220 220 220"]])],
+    ["VEN", new Map([["displayName", "Venice"], ["color", "54 167 156"]])],
+    ["CAS", new Map([["displayName", "Castile"], ["color", "193 171 8"]])],
+    ["POL", new Map([["displayName", "Poland"], ["color", "197 92 106"]])],
+    //["TIM", new Map([["displayName", "Timurids"], ["color", "213 0 39"]])],
+    ["BYZ", new Map([["displayName", "Byzantium"], ["color", "213 0 39"]])],
 ]);
 
 export function populateVariableSelect() : void {
     const variableSelect = document.getElementById("variableSelect");
-    DataPoints.forEach((variable: string) => {
+    DataPointsForLineGraph.forEach((variable: string) => {
         const option = document.createElement("option");
         option.value = variable;
-        option.text = variable.replace(/_/g, ' ');
+        // self indulgent one-liner to title case every word and replace _ with a space
+        option.text = variable.split("_").map((word: string) => {
+            return word.charAt(0).toUpperCase() + word.substring(1);
+        }).join(" ");
         variableSelect.appendChild(option);
     });
 }
@@ -47,6 +57,7 @@ export function populateGraphCheckBoxes() : void {
         tagCheckbox.type = "checkbox";
         tagCheckbox.id = tag;
         tagCheckbox.name = "tag";
+        tagCheckbox.checked = true;
         const tagCheckboxLabel = document.createElement("label");
         tagCheckboxLabel.htmlFor = tag;
         tagCheckboxLabel.innerHTML = properties.get("displayName")
