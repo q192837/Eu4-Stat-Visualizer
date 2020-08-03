@@ -43,7 +43,7 @@ class LineGraph {
                 return Math.max(d.date); })]);
 
          this.y.domain([d3.min(data, d => {
-                return Math.min(...Array.from(this.tags, tag => {return parseFloat(d[tag])+(parseFloat(d[tag])*.10)}))}),
+                return Math.min(...Array.from(this.tags, tag => {return parseFloat(d[tag])-(parseFloat(d[tag])*.10)}))}),
                 d3.max(data, d => {
                 return Math.max(...Array.from(this.tags, tag => {return parseFloat(d[tag])+(parseFloat(d[tag])*.10)}))})]);
 
