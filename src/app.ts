@@ -71,7 +71,6 @@ class Campaign {
   saveCount: number;
   constructor(){
     this.gameData = new Map<string, Map<string, string[]>>();
-    this.playerCountry = "TUR";
     this.saveCount = 0;
   }
 
@@ -90,6 +89,7 @@ class Campaign {
   readMeta(file: string) {
       const meta = fs.readFileSync(file, 'utf8');
       this.setGameData("ALL", "date", this.getDate(meta));
+      this.playerCountry = meta.match(/player="([A-z]{3})"/)[1] ?? "";
   }
 
  getDate(data: string) {
