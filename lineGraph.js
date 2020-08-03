@@ -9,7 +9,7 @@ class LineGraph {
         this.x = null;
         this.y = null;
         this.xLabel = options.xLabel || "Year"
-        this.yLabel = options.xLabel || this.variable;
+        this.yLabel = options.yLabel || this.variable;
 
         this.tags = options.tags || [];
 
@@ -17,7 +17,10 @@ class LineGraph {
         this.render();
     }
 
-    render() {
+    render(rerender=false) {
+        if (rerender){
+            d3.select("#chart").selectAll("*").remove();
+        }
         var data = this.GetPrettyData()
 
         let margin = { top: 20, right: 20, bottom: 50, left: 50 };
@@ -90,13 +93,19 @@ class LineGraph {
         }
 
         UpdateXAxisLabel(newLabel){
-            self.xLabel = newLabel;
+            this.xLabel = newLabel;
             document.getElementById("xAxis").innerHTML = newLabel;
         }
 
         UpdateYAxisLabel(newLabel){
-            self.yLabel = newLabel;
+            this.yLabel = newLabel;
             document.getElementById("yAxis").innerHTML = newLabel;
+        }
+
+        ChangeVariable(newVariable, newVariableLabel){
+            this.variable = newVariable;
+            this.UpdateYAxisLabel(newVariableLabel);
+            this.render(true);
         }
 
         GetYearFromDateString(dateString){
@@ -139,4 +148,8 @@ let chart = new LineGraph('#chart', {
     height: 700,
     tags: uiBuild.getActiveTags(),
     colors: uiBuild.getActiveTagColors(),
-    });
+    });document.getElementById("variableSelect").addEventListener("change", (event) => {
+
+document.getElementById("variableSelect").addEventListener("change", (event) => {
+    chart.ChangeVariable(event.target.value, event.target.options[event.target.selectedIndex].text);
+});
