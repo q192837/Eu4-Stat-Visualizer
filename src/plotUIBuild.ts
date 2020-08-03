@@ -1,11 +1,11 @@
-const DataPoints : string[] = ['history', 'national_focus', 'technology_cost', 'is_at_war', 'num_of_mercenaries', 'num_of_regulars', 'num_of_colonies', 'num_of_heathen_provs',
-'republican_tradition', 'root_out_corruption_sliderlegitimacy', 'absolutism', 'government_rank', 'religion', 'capital', 'trade_port', 'base_tax', 'raw_development', 'adm_tech',
-'dip_tech', 'mil_tech', 'current_power_projection', 'great_power_score', 'score', 'navy_strength', 'total_war_worth', 'num_of_rebel_controlled_provinces', 'num_of_rebel_armies',
-'num_owned_home_cores', 'non_overseas_developmen', 'num_of_controlled_cities', 'num_of_total_ports', 'num_of_cities', 'forts', 'num_of_allies', 'num_of_royal_marriages',
-'num_of_subjects', 'average_unrest', 'average_autonomy', 'prestige', 'stability', 'treasury', 'estimated_monthly_income', 'land_maintenance', 'naval_maintenance',
-'colonial_maintenance', 'missionary_maintenance', 'army_tradition', 'navy_tradition', 'lastmonthincome', 'lastmonthincometable', 'lastmonthexpense', 'lastmonthexpensetable', 'loan_size',
-'estimated_loan', 'religious_unity', 'meritocracy', 'corruption', 'mercantilism', 'splendor', 'active_idea_groups', 'army_professionalism', 'manpower', 'max_manpower', 'max_sailors', 'wants_to_be_great_power', 'needs_regiments',
-'needs_buildings', 'needs_ships']
+const DataPointsForLineGraph : string[] = ['num_of_mercenaries', 'num_of_regulars', 'num_of_colonies', 'num_of_heathen_provs','republican_tradition',
+'root_out_corruption_sliderlegitimacy', 'absolutism', 'base_tax', 'raw_development', 'adm_tech','dip_tech', 'mil_tech', 'current_power_projection',
+'great_power_score', 'score', 'navy_strength', 'total_war_worth', 'num_of_rebel_controlled_provinces', 'num_of_rebel_armies','num_owned_home_cores',
+'non_overseas_developmen', 'num_of_controlled_cities', 'num_of_total_ports', 'num_of_cities', 'forts', 'num_of_allies', 'num_of_royal_marriages',
+'num_of_subjects', 'average_unrest', 'average_autonomy', 'prestige', 'stability', 'treasury', 'estimated_monthly_income', 'land_maintenance',
+'naval_maintenance', 'colonial_maintenance', 'missionary_maintenance', 'army_tradition', 'navy_tradition', 'lastmonthincome', 'lastmonthincometable',
+'lastmonthexpense', 'loan_size', 'estimated_loan', 'religious_unity', 'corruption', 'mercantilism', 'splendor', 'army_professionalism', 'manpower',
+'max_manpower', 'max_sailors']
 
 
 const ActiveCountries : Map<string, Map<string, string>> = new Map([
