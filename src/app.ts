@@ -114,15 +114,19 @@ class Campaign {
       const tagStarti = starti
       const tagEndi = gamestate.indexOf("mission_slot={", starti);
       const nation = gamestate.substring(tagStarti, tagEndi);
+      starti = 0;
       Campaign.DataPoints.forEach((dataPoint: string) => {
         starti = nation.indexOf(dataPoint + '=', starti)
-        if (starti === -1) {
-          starti = 0;
-          this.setGameData(tag, dataPoint, "NONE");
-          return;
+        if (starti === -1 && !Campaign.additionalParseDataPoints.has(dataPoint)) {
+          starti = nation.indexOf(dataPoint + '=', 0);
+          if (starti === -1){
+            starti = 0;
+            this.setGameData(tag, dataPoint, "NONE");
+            return;
+          }
         }
         if(Campaign.additionalParseDataPoints.has(dataPoint)) {
-          this.parseComplicatedDataPoint(tag, dataPoint, starti);
+          this.parseComplicatedDataPoint(nation, tag, dataPoint, starti);
           return;
         }
         const endi = nation.indexOf('\n', starti);
@@ -149,7 +153,57 @@ class Campaign {
     }
   }
 
-  parseComplicatedDataPoint(tag: string, dataPoint: string, starti: number) {
+  parseComplicatedDataPoint(nation: string, tag: string, dataPoint: string, starti: number) {
+    let endi = 0;
+    switch (dataPoint) {
+      case "history":
+        starti = nation.indexOf("\n\t\tmonarch={");
+        const monarchId = nation.substring(starti, starti + 100).match(/id=(\d*)/)[1];
+        starti = nation.indexOf(monarchId);
+        const monarchText = nation.substring(starti, starti + 400)
+        const rulerDip = monarchText.match(/DIP=(\d*)/);
+        this.setGameData(tag, "ruler_diplomatic_ability", rulerDip ? rulerDip[1] : "0");
+        const rulerAdm = monarchText.match(/ADM=(\d*)/);
+        this.setGameData(tag, "ruler_administrative_ability", rulerAdm ? rulerAdm[1] : "0");
+        const rulerMil = monarchText.match(/MIL=(\d*)/);
+        this.setGameData(tag, "ruler_military_ability", rulerMil ? rulerMil[1] : "0");
+        const rulerCulture = monarchText.match(/culture="?([\w ]*)/);
+        this.setGameData(tag, "ruler_culture", rulerCulture ? rulerCulture[1] : "NONE");
+        const rulerReligion = monarchText.match(/religion="?([\w ]*)/);
+        this.setGameData(tag, "ruler_religion", rulerReligion ? rulerReligion[1] : "NONE");
+        const rulerDynasty = monarchText.match(/dynasty="?([\w ]*)/);
+        this.setGameData(tag, "ruler_dynasty", rulerDynasty ? rulerDynasty[1] : "NONE");
+        const rulerBirthDate = monarchText.match(/birth_date=(\d*.\d*.\d*)/);
+        this.setGameData(tag, "ruler_birth_date", rulerBirthDate ? rulerBirthDate[1] : "NONE");
+        const rulerName = monarchText.match(/monarch_name="?([\w ]*)/) ?? monarchText.match(/name="?([\w ]*)/);
+        this.setGameData(tag, "ruler_name", rulerName ? rulerName[1] : "NONE");
+        break;
+      case "lastmonthincometable":
+        starti = nation.indexOf("lastmonthincometable={\n\t\t\t\t") + "lastmonthincometable={\n\t\t\t\t".length;
+        endi = nation.indexOf('\n', starti);
+        const incomeArray = nation.substring(starti, endi).split(" ").filter((value) => {return value.length > 0});
+        Campaign.incomeDataToCollect.forEach((incomeData: string, i: number) => {
+          this.setGameData(tag, incomeData, incomeArray[i]);
+        });
+        break;
+      case "lastmonthexpensetable":
+        starti = nation.indexOf("lastmonthexpensetable={\n\t\t\t\t") + "lastmonthexpensetable={\n\t\t\t\t".length;
+        endi = nation.indexOf('\n', starti);
+        const expenseArray = nation.substring(starti, endi).split(" ").filter((value) => {return value.length > 0});
+        Campaign.expenseDataToCollect.forEach((expenseData: string, i: number) => {
+          this.setGameData(tag, expenseData, expenseArray[i]);
+        });
+        break;
+      case "powers":
+        starti = nation.indexOf("\n\t\tpowers={\n\t\t\t") + "\n\t\tpowers={\n\t\t\t".length;
+        endi = nation.indexOf('\n', starti);
+        const powersArray = nation.substring(starti, endi).split(" ").filter((value) => {return value.length > 0});
+        Campaign.powersDataToCollect.forEach((power: string, i: number) => {
+          this.setGameData(tag, power, powersArray[i]);
+        });
+        break;
+    }
+
     return '';
   }
 
@@ -194,17 +248,21 @@ class Campaign {
     fs.rmdirSync(folder);
   }
 
+  static incomeDataToCollect : string[] = ["Taxation", "Production", "Trade", "Gold", "Tariffs", "Vassals", "Harbor_Fees", "Subsidies_In", "Spoils_of_War", "War_Reparations", "Condottieri", "Knowledge_Sharing"];
+  static expenseDataToCollect : string[] = ["Advisor", "Interest", "State", "MYSTERY", "Subsidies", "War_Reparations", "army", "navy", "fort", "Colonies", "Missionaries"];
+  static ideaDataToCollect: string[] = ["National Ideas", "Idea 1", "Idea 2", "Idea 3", "Idea 4", "Idea 5", "Idea 6", "Idea 7", "Idea 8"];
+  static powersDataToCollect: string[] =  ["current_admin_power", "current_diplomatic_pwoer", "current_military_power"];
 
-  static DataPoints : string[] = ['human', 'history', 'national_focus', 'technology_cost', 'is_at_war', 'num_of_mercenaries', 'num_of_regulars', 'num_of_colonies', 'num_of_heathen_provs',
-  'republican_tradition', 'root_out_corruption_sliderlegitimacy', 'absolutism', 'government_rank', 'religion', 'capital', 'trade_port', 'base_tax', 'raw_development', 'adm_tech',
+  static DataPoints : string[] = ['history', 'national_focus', 'technology_cost', 'is_at_war', 'num_of_mercenaries', 'num_of_regulars', 'num_of_colonies', 'num_of_heathen_provs',
+  'republican_tradition', 'root_out_corruption_slider', 'legitimacy', 'absolutism', 'government_rank', 'religion', 'capital', 'trade_port', 'base_tax', 'raw_development', 'adm_tech',
   'dip_tech', 'mil_tech', 'current_power_projection', 'great_power_score', 'score', 'navy_strength', 'total_war_worth', 'num_of_rebel_controlled_provinces', 'num_of_rebel_armies',
   'num_owned_home_cores', 'non_overseas_developmen', 'num_of_controlled_cities', 'num_of_total_ports', 'num_of_cities', 'forts', 'num_of_allies', 'num_of_royal_marriages',
   'num_of_subjects', 'average_unrest', 'average_autonomy', 'prestige', 'stability', 'treasury', 'estimated_monthly_income', 'land_maintenance', 'naval_maintenance',
   'colonial_maintenance', 'missionary_maintenance', 'army_tradition', 'navy_tradition', 'lastmonthincome', 'lastmonthincometable', 'lastmonthexpense', 'lastmonthexpensetable', 'loan_size',
   'estimated_loan', 'religious_unity', 'meritocracy', 'corruption', 'mercantilism', 'splendor', 'active_idea_groups', 'army_professionalism', 'manpower', 'max_manpower', 'max_sailors', 'wants_to_be_great_power', 'needs_regiments',
-  'needs_buildings', 'needs_ships']
+  'needs_buildings', 'needs_ships', 'powers']
 
-  static additionalParseDataPoints : Set<string> = new Set(['history', 'lastmonthincometable', 'lastmonthexpensetable', 'active_idea_groups'])
+  static additionalParseDataPoints : Set<string> = new Set(['history', 'lastmonthincometable', 'lastmonthexpensetable', 'active_idea_groups', 'powers'])
 
   static test : Map<string, string> = new Map([["REB", "Rebels"]]);
 
