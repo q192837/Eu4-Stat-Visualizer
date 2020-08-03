@@ -9,7 +9,9 @@ import {v4 as uuid} from 'uuid';
 // button click event
 document.getElementById("mybutton").addEventListener("click", watchZip);
 
-document.getElementById("saveButton").addEventListener("click", saveGame);
+document.getElementById("saveButton").addEventListener("click", saveGameData);
+
+document.getElementById("loadButton").addEventListener("click", loadGameData);
 
 let autosaveLastModified : Date;
 
@@ -53,7 +55,11 @@ function watchFile(eventType: string, filename: string) {
   }
 }
 
-function saveGame(){
+function saveGameData(){
+  test.saveJson();
+}
+
+function loadGameData(){
   test.loadJson();
 }
 
@@ -171,7 +177,13 @@ class Campaign {
   }
 
   async loadJson(filename="") {
-    this.gameData = JSON.parse(fs.readFileSync("./saves/TUR_1445.1.1.json", 'utf8'));
+    const gameDataObject = JSON.parse(fs.readFileSync("./saves/TUR_1496.1.1.json", 'utf8'));
+    Object.keys(gameDataObject).forEach((tag: string) => {
+      this.gameData.set(tag, new Map<string, string[]>());
+      Object.keys(gameDataObject[tag]).forEach((dataPoint: string) => {
+        this.gameData.get(tag).set(dataPoint, gameDataObject[tag][dataPoint])
+      });
+    });
     console.log(this.gameData);
   }
 
