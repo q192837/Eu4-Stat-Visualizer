@@ -51,6 +51,7 @@ class LineGraph {
             svg.append("path")
                 .data([data])
                 .attr("class", "line")
+                .attr("id", tag + "Line")
                 .style("stroke", this.colors[i])
                 .attr("d", this.PathGenerator(tag));
         });
@@ -122,12 +123,14 @@ class LineGraph {
             this.data.ALL.date.forEach((date, i) => {
                 var timePointObject = {"date": this.GetYearFromDateString(date)};
                 this.tags.forEach((tag) => {
-                    timePointObject[tag] = this.data[tag][this.variable][i];
+                    timePointObject[tag] =
+                    this.data[tag][this.variable][i] === "NONE" ? 0 : this.data[tag][this.variable][i];
                 });
                 prettyData.push(timePointObject);
             });
             return prettyData;
         }
+
     }
 
 
@@ -142,14 +145,22 @@ var data = JSON.parse(saveFile);
 uiBuild.populateVariableSelect();
 uiBuild.populateGraphCheckBoxes();
 
-let chart = new LineGraph('#chart', {
+var chart = new LineGraph('#chart', {
     data: data,
     width: 960,
     height: 700,
+    variable: "manpower",
+    yLabel: "Manpower",
     tags: uiBuild.getActiveTags(),
     colors: uiBuild.getActiveTagColors(),
-    });document.getElementById("variableSelect").addEventListener("change", (event) => {
+    });
 
 document.getElementById("variableSelect").addEventListener("change", (event) => {
     chart.ChangeVariable(event.target.value, event.target.options[event.target.selectedIndex].text);
+});
+document.getElementsByName("tag").forEach((checkbox) => {
+    checkbox.addEventListener("change", (event) => {
+        let lineId = event.target.id + "Line"
+        document.getElementById(lineId).style.display = event.target.checked ? "" : "None";
+    });
 });
